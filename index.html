@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Zid Order Sync</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+
+    /* =========================================================
+       RESET
+    ========================================================= */
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+
+    /* =========================================================
+       VARIABLES
+    ========================================================= */
+
+    :root {
+
+      --bg-color: #0b0f17;
+
+      --card-bg: rgba(22, 30, 46, 0.65);
+
+      --card-border: rgba(255, 255, 255, 0.08);
+
+      --input-bg: rgba(15, 23, 42, 0.6);
+
+      --input-border: rgba(255, 255, 255, 0.12);
+
+      --text-main: #f1f5f9;
+
+      --text-muted: #94a3b8;
+
+      --accent-indigo: #6366f1;
+
+      --accent-indigo-hover: #4f46e5;
+
+      --accent-glow: rgba(99, 102, 241, 0.25);
+
+      --status-saved: #10b981;
+
+      --status-duplicate: #f59e0b;
+
+      --status-failed: #ef4444;
+
+      --status-stopped: #f59e0b;
+
+      --radius-lg: 16px;
+
+      --radius-md: 10px;
+    }
+
+
+    /* =========================================================
+       BODY
+    ========================================================= */
+
+    body {
+
+      min-height: 100vh;
+
+      padding: 40px;
+
+      font-family:
+        'Plus Jakarta Sans',
+        system-ui,
+        -apple-system,
+        sans-serif;
+
+      background-color: var(--bg-color);
+
+      background-image:
+
+        radial-gradient(
+          circle at 10% 10%,
+          rgba(99, 102, 241, 0.15) 0%,
+          transparent 40%
+        ),
+
+        radial-gradient(
+          circle at 90% 90%,
+          rgba(14, 165, 233, 0.10) 0%,
+          transparent 40%
+        );
+
+      color: var(--text-main);
+
+      color-scheme: dark;
+    }
+
+
+    /* =========================================================
+       MAIN CONTAINER
+    ========================================================= */
+
+    .container {
+
+      width: 100%;
+
+      max-width: 900px;
+
+      margin: 0 auto;
+    }
+
+
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
+    .header {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      padding-bottom: 20px;
+
+      margin-bottom: 25px;
+
+      border-bottom:
+        1px solid var(--card-border);
+    }
+
+
+    .header h1 {
+
+      font-size: 1.5rem;
+
+      font-weight: 700;
+
+      background:
+        linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #cbd5e1 100%
+        );
+
+      -webkit-background-clip: text;
+
+      -webkit-text-fill-color: transparent;
+
+      letter-spacing: -0.02em;
+    }
+
+
+    /* =========================================================
+       STATUS BADGE
+    ========================================================= */
+
+    .status-badge {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      background:
+        rgba(99, 102, 241, 0.10);
+
+      border:
+        1px solid rgba(99, 102, 241, 0.25);
+
+      padding: 8px 14px;
+
+      border-radius: 20px;
+
+      font-size: 0.75rem;
+
+      font-weight: 600;
+
+      color: #a5b4fc;
+    }
+
+
+    #syncStatusText {
+
+      color: #ffffff;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 6px;
+    }
+
+
+    #syncStatusText::before {
+
+      content: '';
+
+      width: 7px;
+
+      height: 7px;
+
+      background-color:
+        var(--status-saved);
+
+      border-radius: 50%;
+
+      box-shadow:
+        0 0 8px var(--status-saved);
+    }
+
+
+    /* =========================================================
+       SECTION TITLE
+    ========================================================= */
+
+    .section-title {
+
+      font-size: 0.8rem;
+
+      font-weight: 700;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.08em;
+
+      color: var(--text-muted);
+
+      margin: 22px 0 12px 0;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 8px;
+    }
+
+
+    .section-title::after {
+
+      content: '';
+
+      flex: 1;
+
+      height: 1px;
+
+      background:
+        var(--card-border);
+    }
+
+
+    /* =========================================================
+       FORM GRID
+    ========================================================= */
+
+    .form-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 12px;
+
+      background:
+        var(--card-bg);
+
+      backdrop-filter: blur(12px);
+
+      border:
+        1px solid var(--card-border);
+
+      padding: 18px;
+
+      border-radius:
+        var(--radius-lg);
+
+      box-shadow:
+        0 8px 32px
+        rgba(0, 0, 0, 0.3);
+    }
+
+
+    .input-group {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 7px;
+    }
+
+
+    .input-group.full-width {
+
+      grid-column: span 2;
+    }
+
+
+    .input-group label {
+
+      font-size: 0.75rem;
+
+      font-weight: 500;
+
+      color:
+        var(--text-muted);
+    }
+
+
+    .input-group input {
+
+      width: 100%;
+
+      padding: 11px 13px;
+
+      background:
+        var(--input-bg);
+
+      border:
+        1px solid var(--input-border);
+
+      border-radius:
+        var(--radius-md);
+
+      color:
+        var(--text-main);
+
+      font-size: 0.85rem;
+
+      outline: none;
+
+      transition:
+        all 0.2s ease;
+    }
+
+
+    .input-group input:focus {
+
+      border-color:
+        var(--accent-indigo);
+
+      box-shadow:
+        0 0 0 3px
+        var(--accent-glow);
+
+      background:
+        rgba(15, 23, 42, 0.9);
+    }
+
+
+    /* =========================================================
+       STATS
+    ========================================================= */
+
+    .status-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 12px;
+    }
+
+
+    .status-box {
+
+      background:
+        var(--card-bg);
+
+      backdrop-filter:
+        blur(12px);
+
+      border:
+        1px solid var(--card-border);
+
+      padding: 18px 10px;
+
+      border-radius:
+        var(--radius-lg);
+
+      text-align: center;
+
+      transition:
+        transform 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+
+    .status-box:hover {
+
+      transform:
+        translateY(-2px);
+    }
+
+
+    .status-number {
+
+      font-size: 1.7rem;
+
+      font-weight: 700;
+
+      line-height: 1.2;
+    }
+
+
+    .status-label {
+
+      font-size: 0.7rem;
+
+      font-weight: 600;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.05em;
+
+      margin-top: 5px;
+
+      color:
+        var(--text-muted);
+    }
+
+
+    .status-box.saved
+    .status-number {
+
+      color:
+        var(--status-saved);
+    }
+
+
+    .status-box.duplicate
+    .status-number {
+
+      color:
+        var(--status-duplicate);
+    }
+
+
+    .status-box.failed
+    .status-number {
+
+      color:
+        var(--status-failed);
+    }
+
+
+    /* =========================================================
+       ERRORS
+    ========================================================= */
+
+    #syncErrors {
+
+      margin-top: 12px;
+
+      font-size: 0.75rem;
+
+      color:
+        var(--status-failed);
+
+      background:
+        rgba(239, 68, 68, 0.08);
+
+      border:
+        1px solid
+        rgba(239, 68, 68, 0.2);
+
+      border-radius:
+        var(--radius-md);
+
+      padding: 10px 12px;
+
+      display: none;
+
+      max-height: 220px;
+
+      overflow-y: auto;
+    }
+
+
+    #syncErrors:not(:empty) {
+
+      display: block;
+    }
+
+
+    .sync-error-item {
+
+      padding: 5px 0;
+
+      border-bottom:
+        1px solid
+        rgba(239, 68, 68, 0.10);
+    }
+
+
+    .sync-error-item:last-child {
+
+      border-bottom: none;
+    }
+
+
+    /* =========================================================
+       ACTIONS
+    ========================================================= */
+
+    .actions-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 10px;
+
+      margin-top: 18px;
+    }
+
+
+    button {
+
+      padding: 12px 16px;
+
+      font-size: 0.8rem;
+
+      font-weight: 600;
+
+      border-radius:
+        var(--radius-md);
+
+      border:
+        1px solid transparent;
+
+      cursor: pointer;
+
+      transition:
+        all 0.2s ease;
+    }
+
+
+    /* START */
+
+    #startBtn {
+
+      grid-column:
+        span 2;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--accent-indigo) 0%,
+          var(--accent-indigo-hover) 100%
+        );
+
+      color: #ffffff;
+
+      box-shadow:
+        0 4px 14px
+        var(--accent-glow);
+    }
+
+
+    #startBtn:hover {
+
+      box-shadow:
+        0 6px 20px
+        rgba(99, 102, 241, 0.4);
+
+      transform:
+        translateY(-1px);
+    }
+
+
+    /* STOP */
+
+    #stopBtn {
+
+      background:
+        rgba(239, 68, 68, 0.10);
+
+      border-color:
+        rgba(239, 68, 68, 0.25);
+
+      color:
+        #fca5a5;
+    }
+
+
+    #stopBtn:hover {
+
+      background:
+        rgba(239, 68, 68, 0.20);
+    }
+
+
+    /* SAVE */
+
+    #saveBtn {
+
+      background:
+        rgba(255, 255, 255, 0.06);
+
+      border-color:
+        var(--card-border);
+
+      color:
+        var(--text-main);
+    }
+
+
+    #saveBtn:hover {
+
+      background:
+        rgba(255, 255, 255, 0.12);
+    }
+
+
+    /* END SHIFT */
+
+    #endShiftBtn {
+
+      background:
+        rgba(16, 185, 129, 0.10);
+
+      border-color:
+        rgba(16, 185, 129, 0.25);
+
+      color:
+        #34d399;
+    }
+
+
+    #endShiftBtn:hover {
+
+      background:
+        rgba(16, 185, 129, 0.20);
+    }
+
+
+    /* RESET */
+
+    #resetBtn,
+    #resetSettingsBtn {
+
+      background:
+        rgba(239, 68, 68, 0.08);
+
+      border-color:
+        rgba(239, 68, 68, 0.20);
+
+      color:
+        #fca5a5;
+    }
+
+
+    #resetBtn:hover,
+    #resetSettingsBtn:hover {
+
+      background:
+        rgba(239, 68, 68, 0.18);
+    }
+
+
+    button:active {
+
+      transform:
+        scale(0.98);
+    }
+
+
+    button:disabled {
+
+      opacity: 0.5;
+
+      cursor: not-allowed;
+
+      transform: none !important;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 700px) {
+
+      body {
+
+        padding: 20px;
+      }
+
+
+      .form-grid {
+
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .input-group.full-width {
+
+        grid-column:
+          span 1;
+      }
+
+
+      .status-grid {
+
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .actions-grid {
+
+        grid-template-columns:
+          1fr;
+      }
+
+
+      #startBtn {
+
+        grid-column:
+          span 1;
+      }
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <div class="header">
+
+    <h1>
+      Zid Order Sync
+    </h1>
+
+    <div class="status-badge">
+
+      <span>
+        Sync Status
+      </span>
+
+      <span id="syncStatusText">
+        Ready
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       INTERNAL ORDERS
+  ====================================================== -->
+
+  <div class="section-title">
+    Internal Orders
+  </div>
+
+
+  <div class="form-grid">
+
+    <div class="input-group full-width">
+
+      <label for="internalSpreadsheetId">
+        Internal Spreadsheet ID
+      </label>
+
+      <input
+        type="text"
+        id="internalSpreadsheetId"
+        placeholder="Enter Internal Spreadsheet ID..."
+      >
+
+    </div>
+
+
+    <div class="input-group">
+
+      <label for="internalPaidHoneyTabName">
+        Paid Honey Tab
+      </label>
+
+      <input
+        type="text"
+        id="internalPaidHoneyTabName"
+        placeholder="Paid Honey Tab"
+      >
+
+    </div>
+
+
+    <div class="input-group">
+
+      <label for="internalCashHoneyTabName">
+        Cash Honey Tab
+      </label>
+
+      <input
+        type="text"
+        id="internalCashHoneyTabName"
+        placeholder="Cash Honey Tab"
+      >
+
+    </div>
+
+
+    <div class="input-group">
+
+      <label for="internalPaidRestTabName">
+        Paid Herbs Tab
+      </label>
+
+      <input
+        type="text"
+        id="internalPaidRestTabName"
+        placeholder="Paid Rest Tab"
+      >
+
+    </div>
+
+
+    <div class="input-group">
+
+      <label for="internalCashRestTabName">
+        Cash Herbs Tab
+      </label>
+
+      <input
+        type="text"
+        id="internalCashRestTabName"
+        placeholder="Cash Rest Tab"
+      >
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       INTERNATIONAL ORDERS
+  ====================================================== -->
+
+  <div class="section-title">
+    International Orders
+  </div>
+
+
+  <div class="form-grid">
+
+    <div class="input-group full-width">
+
+      <label for="internationalSpreadsheetId">
+        International Spreadsheet ID
+      </label>
+
+      <input
+        type="text"
+        id="internationalSpreadsheetId"
+        placeholder="Enter International Spreadsheet ID..."
+      >
+
+    </div>
+
+
+    <div class="input-group">
+
+      <label for="internationalTabName">
+        International Tab
+      </label>
+
+      <input
+        type="text"
+        id="internationalTabName"
+        placeholder="International Tab"
+      >
+
+    </div>
+
+
+    <div class="input-group">
+
+      <label for="lastOrderId">
+        Last Order ID
+      </label>
+
+      <input
+        type="number"
+        id="lastOrderId"
+        placeholder="e.g. 73321405"
+      >
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       SYNC STATUS
+  ====================================================== -->
+
+  <div class="section-title">
+    Sync Status
+  </div>
+
+
+  <div class="status-grid">
+
+    <div class="status-box saved">
+
+      <div
+        class="status-number"
+        id="savedCount"
+      >
+        0
+      </div>
+
+      <div class="status-label">
+        Saved
+      </div>
+
+    </div>
+
+
+    <div class="status-box duplicate">
+
+      <div
+        class="status-number"
+        id="duplicateCount"
+      >
+        0
+      </div>
+
+      <div class="status-label">
+        Duplicate
+      </div>
+
+    </div>
+
+
+    <div class="status-box failed">
+
+      <div
+        class="status-number"
+        id="failedCount"
+      >
+        0
+      </div>
+
+      <div class="status-label">
+        Failed
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       ERRORS
+  ====================================================== -->
+
+  <div id="syncErrors"></div>
+
+
+  <!-- =====================================================
+       ACTIONS
+  ====================================================== -->
+
+  <div class="actions-grid">
+
+    <button
+      id="startBtn"
+      type="button"
+    >
+      Start Sync
+    </button>
+
+
+    <button
+      id="saveBtn"
+      type="button"
+    >
+      Save Settings
+    </button>
+
+
+    <button
+      id="stopBtn"
+      type="button"
+    >
+      Stop
+    </button>
+
+
+    <button
+      id="endShiftBtn"
+      type="button"
+    >
+      End Shift
+    </button>
+
+
+    <button
+      id="resetBtn"
+      type="button"
+    >
+      Reset Orders
+    </button>
+
+
+    <button
+      id="resetSettingsBtn"
+      type="button"
+    >
+      Reset Settings
+    </button>
+
+  </div>
+
+
+</div>
+
+
+<!-- =====================================================
+     PROJECT FILES
+====================================================== -->
+
+<script src="lip/pares.js"></script>
+
+<script src="lip/productMap.js"></script>
+
+<script src="lip/rules.js"></script>
+
+<script src="lip/duplicate.js"></script>
+
+<script src="google.js"></script>
+
+<script src="app.js"></script>
+
+
+</body>
+
+</html>
